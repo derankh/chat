@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>Chat</title>
+  <title>GIS Chat mit Suche, Unternehmen & Filter (Final Layout)</title>
   <style>
     body { font-family: Arial, sans-serif; margin: 20px; background-color: #f4f4f4; }
     #messages { border: 1px solid #ccc; padding: 10px; height: 300px; overflow-y: auto; background: #fff; margin-bottom: 10px; }
@@ -42,9 +42,9 @@
 </head>
 <body>
 
-<h2>Chat</h2>
+<h2>GIS Chat mit Suche, Unternehmen & Filter</h2>
 
-<!-- Filter Dropdown -->
+<!-- Filter oben -->
 <select id="anfrageFilter">
   <option value="">Alle Anfragen</option>
   <option value="Telekom">Nur Telekom</option>
@@ -59,8 +59,9 @@
 
 <!-- Eingabefelder -->
 <input type="text" id="username" placeholder="Dein Name" />
+<input type="text" id="company" placeholder="Unternehmen (optional)" />
 
-<!-- Anfrage an: (Dropdown nach oben gezogen) -->
+<!-- Anfrage an Dropdown jetzt hier -->
 <select id="anfrageAn">
   <option value="">Anfrage an: (optional)</option>
   <option value="Telekom">Telekom</option>
@@ -68,7 +69,6 @@
   <option value="Telefónica">Telefónica</option>
 </select>
 
-<input type="text" id="company" placeholder="Unternehmen (optional)" />
 <input type="text" id="stobNr" placeholder="Stob. Nr. (optional)" />
 <input type="text" id="objectID" placeholder="Object_ID Unterversorgtes Gebiet (optional)" />
 <input type="text" id="message" placeholder="Deine Nachricht" />
