@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
+  <meta charset="UTF-8">
   <title>Chat</title>
   <style>
     body { font-family: Arial, sans-serif; margin: 20px; background-color: #f4f4f4; }
@@ -44,12 +45,12 @@
 
 <h2>Chat</h2>
 
-<!-- Filter oben -->
+<!-- Filter Dropdown -->
 <select id="anfrageFilter">
   <option value="">Alle Anfragen</option>
   <option value="Telekom">Nur Telekom</option>
   <option value="Vodafone">Nur Vodafone</option>
-  <option value="Telefónica">Nur Telefónica</option>
+  <option value="Teléfonica">Nur Teléfonica</option>
 </select>
 
 <input type="text" id="searchInput" placeholder="Suche nach Stob. Nr., Object_ID oder Unternehmen" />
@@ -61,13 +62,13 @@
 <input type="text" id="username" placeholder="Dein Name" />
 <input type="text" id="company" placeholder="Unternehmen (optional)" />
 
-<!-- Anfrage an Dropdown jetzt hier -->
-<select id="anfrageAn">
-  <option value="">Anfrage an: (optional)</option>
-  <option value="Telekom">Telekom</option>
-  <option value="Vodafone">Vodafone</option>
-  <option value="Telefónica">Telefónica</option>
-</select>
+<!-- Anfrage an: mit Datalist -->
+<input list="firmenListe" id="anfrageAn" placeholder="Anfrage an: (optional)" />
+<datalist id="firmenListe">
+  <option value="Telekom">
+  <option value="Vodafone">
+  <option value="Teléfonica">
+</datalist>
 
 <input type="text" id="stobNr" placeholder="Stob. Nr. (optional)" />
 <input type="text" id="objectID" placeholder="Object_ID Unterversorgtes Gebiet (optional)" />
@@ -103,7 +104,7 @@
 
   function sendMessage() {
     var user = document.getElementById('username').value.trim();
-    var anfrage = document.getElementById('anfrageAn').value;
+    var anfrage = document.getElementById('anfrageAn').value.trim();
     var company = document.getElementById('company').value.trim();
     var text = document.getElementById('message').value.trim();
     var stob = document.getElementById('stobNr').value.trim();
