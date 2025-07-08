@@ -4,8 +4,8 @@
   <title>Chat</title>
   <style>
     body { font-family: Arial, sans-serif; margin: 20px; background-color: #f4f4f4; }
-    #messages { border: 1px solid #ccc; padding: 10px; height: 300px; overflow-y: auto; background: #fff; }
-    input, button { padding: 8px; margin-top: 10px; width: calc(100% - 20px); border-radius: 4px; border: 1px solid #ccc; }
+    #messages { border: 1px solid #ccc; padding: 10px; height: 300px; overflow-y: auto; background: #fff; margin-bottom: 10px; }
+    input, select, button { padding: 8px; margin-top: 8px; width: calc(100% - 20px); border-radius: 4px; border: 1px solid #ccc; box-sizing: border-box; }
     button { cursor: pointer; background-color: #0078D4; color: white; border: none; }
     button:hover { background-color: #005a9e; }
   </style>
@@ -14,18 +14,41 @@
 
 <h2>Chat</h2>
 
+<!-- Filter Dropdown & Suchfeld oben -->
+<select id="anfrageFilter">
+  <option value="">Alle Anfragen</option>
+  <option value="Telekom">Nur Telekom</option>
+  <option value="Vodafone">Nur Vodafone</option>
+  <option value="Telefónica">Nur Telefónica</option>
+</select>
+
+<input type="text" id="searchInput" placeholder="Suche nach Stob. Nr., Object_ID oder Unternehmen" />
+<button onclick="filterMessages()">Filter anwenden</button>
+
 <div id="messages">Noch keine Nachrichten...</div>
 
+<!-- Eingabefelder -->
 <input type="text" id="username" placeholder="Dein Name" />
+
+<!-- Anfrage Dropdown direkt darunter -->
+<select id="anfrageAn">
+  <option value="">Anfrage an: (optional)</option>
+  <option value="Telekom">Telekom</option>
+  <option value="Vodafone">Vodafone</option>
+  <option value="Telefónica">Telefónica</option>
+</select>
+
+<input type="text" id="company" placeholder="Unternehmen (optional)" />
+<input type="text" id="stobNr" placeholder="Stob. Nr. (optional)" />
+<input type="text" id="objectID" placeholder="Object_ID Unterversorgtes Gebiet (optional)" />
 <input type="text" id="message" placeholder="Deine Nachricht" />
 <button id="sendButton">Senden</button>
 
-<!-- Wichtig: Firebase Version 8.x -->
+<!-- Firebase -->
 <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
 <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
 
 <script>
-  // Firebase Konfiguration
   var firebaseConfig = {
     apiKey: "AIzaSyCBRSH987sliIz7I5a5HRaCLVA0K6igIdc",
     authDomain: "chat-dashbiard.firebaseapp.com",
@@ -36,9 +59,10 @@
     appId: "1:172749077854:web:4c3fcb144c80ce83eea3cf"
   };
 
-  // Firebase initialisieren
   firebase.initializeApp(firebaseConfig);
   var database = firebase.database();
+
+  var allMessages = [];
 
   document.getElementById('sendButton').addEventListener('click', sendMessage);
 
@@ -49,24 +73,70 @@
 
   function sendMessage() {
     var user = document.getElementById('username').value.trim();
+    var anfrage = document.getElementById('anfrageAn').value;
+    var company = document.getElementById('company').value.trim();
     var text = document.getElementById('message').value.trim();
+    var stob = document.getElementById('stobNr').value.trim();
+    var object = document.getElementById('objectID').value.trim();
+
     if(user && text) {
       database.ref('messages').push({
         user: user,
+        anfrageAn: anfrage || null,
+        company: company || null,
         text: text,
+        stobNr: stob || null,
+        objectID: object || null,
         timestamp: Date.now()
       });
+
       document.getElementById('message').value = '';
+      document.getElementById('stobNr').value = '';
+      document.getElementById('objectID').value = '';
+      document.getElementById('company').value = '';
+      document.getElementById('anfrageAn').value = '';
     }
   }
 
   database.ref('messages').on('child_added', function(snapshot) {
     var msg = snapshot.val();
-    var msgElement = document.createElement('div');
-    msgElement.innerHTML = '<strong>' + msg.user + '</strong> (' + formatDate(msg.timestamp) + '): ' + msg.text;
-    document.getElementById('messages').appendChild(msgElement);
-    document.getElementById('messages').scrollTop = document.getElementById('messages').scrollHeight;
+    allMessages.unshift(msg);
+    renderMessages();
   });
+
+  function renderMessages() {
+    var searchTerm = document.getElementById('searchInput').value.trim().toLowerCase();
+    var anfrageFilter = document.getElementById('anfrageFilter').value;
+    var container = document.getElementById('messages');
+    container.innerHTML = '';
+
+    var filtered = allMessages.filter(function(msg) {
+      var matchesSearch = !searchTerm || 
+             (msg.stobNr && msg.stobNr.toLowerCase().includes(searchTerm)) ||
+             (msg.objectID && msg.objectID.toLowerCase().includes(searchTerm)) ||
+             (msg.company && msg.company.toLowerCase().includes(searchTerm));
+
+      var matchesAnfrage = (anfrageFilter === "") || (msg.anfrageAn && msg.anfrageAn === anfrageFilter);
+
+      return matchesSearch && matchesAnfrage;
+    });
+
+    filtered.forEach(function(msg) {
+      var display = `<strong>${msg.user}</strong> (${formatDate(msg.timestamp)}): ${msg.text}`;
+      if (msg.company) display += `<br><em>Unternehmen:</em> ${msg.company}`;
+      if (msg.stobNr) display += `<br><em>Stob. Nr.:</em> ${msg.stobNr}`;
+      if (msg.objectID) display += `<br><em>Object_ID:</em> ${msg.objectID}`;
+      if (msg.anfrageAn) display += `<br><em>Anfrage an:</em> ${msg.anfrageAn}`;
+
+      var msgElement = document.createElement('div');
+      msgElement.innerHTML = display;
+      container.appendChild(msgElement);
+    });
+  }
+
+  function filterMessages() {
+    renderMessages();
+  }
 </script>
 
 </body>
