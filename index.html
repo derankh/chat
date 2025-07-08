@@ -1,20 +1,50 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>Chat</title>
+  <title>GIS Chat mit Suche, Unternehmen & Filter (Final Version)</title>
   <style>
     body { font-family: Arial, sans-serif; margin: 20px; background-color: #f4f4f4; }
     #messages { border: 1px solid #ccc; padding: 10px; height: 300px; overflow-y: auto; background: #fff; margin-bottom: 10px; }
-    input, select, button { padding: 8px; margin-top: 8px; width: calc(100% - 20px); border-radius: 4px; border: 1px solid #ccc; box-sizing: border-box; }
-    button { cursor: pointer; background-color: #0078D4; color: white; border: none; }
-    button:hover { background-color: #005a9e; }
+
+    input, select, button {
+      padding: 8px;
+      margin-top: 8px;
+      width: calc(100% - 20px);
+      border-radius: 4px;
+      border: 1px solid #ccc;
+      box-sizing: border-box;
+    }
+
+    button {
+      cursor: pointer;
+      background-color: #0078D4;
+      color: white;
+      border: none;
+    }
+
+    button:hover {
+      background-color: #005a9e;
+    }
+
+    .message {
+      background-color: #f9f9f9;
+      padding: 10px;
+      margin-bottom: 8px;
+      border-radius: 6px;
+      border: 1px solid #ddd;
+    }
+
+    .message small {
+      font-size: 90%;
+      color: #555;
+    }
   </style>
 </head>
 <body>
 
-<h2>Chat</h2>
+<h2>GIS Chat mit Suche, Unternehmen & Filter</h2>
 
-<!-- Filter Dropdown & Suchfeld oben -->
+<!-- Filter oben -->
 <select id="anfrageFilter">
   <option value="">Alle Anfragen</option>
   <option value="Telekom">Nur Telekom</option>
@@ -27,10 +57,9 @@
 
 <div id="messages">Noch keine Nachrichten...</div>
 
-<!-- Eingabefelder -->
+<!-- Eingabe -->
 <input type="text" id="username" placeholder="Dein Name" />
 
-<!-- Anfrage Dropdown direkt darunter -->
 <select id="anfrageAn">
   <option value="">Anfrage an: (optional)</option>
   <option value="Telekom">Telekom</option>
@@ -123,12 +152,14 @@
 
     filtered.forEach(function(msg) {
       var display = `<strong>${msg.user}</strong> (${formatDate(msg.timestamp)}): ${msg.text}`;
-      if (msg.company) display += `<br><em>Unternehmen:</em> ${msg.company}`;
-      if (msg.stobNr) display += `<br><em>Stob. Nr.:</em> ${msg.stobNr}`;
-      if (msg.objectID) display += `<br><em>Object_ID:</em> ${msg.objectID}`;
-      if (msg.anfrageAn) display += `<br><em>Anfrage an:</em> ${msg.anfrageAn}`;
+
+      if (msg.company) display += `<br><small><em>Unternehmen:</em> ${msg.company}</small>`;
+      if (msg.stobNr) display += `<br><small><em>Stob. Nr.:</em> ${msg.stobNr}</small>`;
+      if (msg.objectID) display += `<br><small><em>Object_ID:</em> ${msg.objectID}</small>`;
+      if (msg.anfrageAn) display += `<br><small><em>Anfrage an:</em> ${msg.anfrageAn}</small>`;
 
       var msgElement = document.createElement('div');
+      msgElement.className = 'message';
       msgElement.innerHTML = display;
       container.appendChild(msgElement);
     });
